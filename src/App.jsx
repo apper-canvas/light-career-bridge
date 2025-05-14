@@ -58,14 +58,11 @@ function App() {
             )}
             
             <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-full bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-200 transition-all duration-300 hover:bg-surface-200 dark:hover:bg-surface-600"
               aria-label="Toggle dark mode"
-            >
-            aria-label="Toggle dark mode"
-          >
-            {darkMode ? <SunIcon size={20} /> : <MoonIcon size={20} />}
-          </button>
+              onClick={toggleDarkMode}
+              className="p-2 rounded-full bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-200 transition-all duration-300 hover:bg-surface-200 dark:hover:bg-surface-600">
+              {darkMode ? <SunIcon size={20} /> : <MoonIcon size={20} />}
+            </button>
         </div>
       </header>
 
