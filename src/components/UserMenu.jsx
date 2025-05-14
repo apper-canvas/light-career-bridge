@@ -72,9 +72,15 @@ function UserMenu({ user, darkMode }) {
             </div>
             
             <div className="py-1">
-              <a href="/profile" className="menu-item">
+              <a 
+                href={user?.userType === 'jobseeker' ? "/profile/create" : "/profile"} 
+                className="menu-item"
+              >
                 <UserIcon size={16} />
-                <span>Your Profile</span>
+                <span>
+                  {user?.userType === 'jobseeker' && !user?.hasProfile ? 'Create Profile' : 'Your Profile'}
+                </span>
+                
               </a>
               
               {user?.userType === 'employer' ? (

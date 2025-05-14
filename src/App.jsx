@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Login from './pages/Login';
+import ProfileCreate from './pages/ProfileCreate';
 import Register from './pages/Register';
 import AuthProtected from './components/AuthProtected';
 import getIcon from './utils/iconUtils';
@@ -72,6 +73,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/profile/create" element={<AuthProtected><ProfileCreate /></AuthProtected>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
