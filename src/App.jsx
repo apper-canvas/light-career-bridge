@@ -63,7 +63,7 @@ function App() {
               className="p-2 rounded-full bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-200 transition-all duration-300 hover:bg-surface-200 dark:hover:bg-surface-600">
               {darkMode ? <SunIcon size={20} /> : <MoonIcon size={20} />}
             </button>
-        </div>
+          </div>
       </header>
 
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
