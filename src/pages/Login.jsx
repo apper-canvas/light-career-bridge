@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom'; 
+import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { useContext } from 'react';
 import { AuthContext } from '../App';
@@ -23,7 +23,7 @@ function Login() {
       ApperUI.showLogin("#authentication");
     }
   }, [isInitialized]);
-  
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface-50 dark:bg-surface-900">
       <motion.div
