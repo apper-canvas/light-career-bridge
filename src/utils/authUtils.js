@@ -24,6 +24,7 @@ export const validatePassword = (password) => {
 };
 
 // Calculate password strength (0-4)
+// This function calculates password strength on a scale from 0 to 4
 export const calculatePasswordStrength = (password) => {
   if (!password) return 0;
   
