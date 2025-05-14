@@ -212,7 +212,13 @@ function MainFeature({ activeTab }) {
   }, [activeTab]);
   
   // Background scrolling prevention when modal is open
-  useEffect(() => document.body.style.overflow = showApplicationModal ? 'hidden' : 'unset', [showApplicationModal]);
+  useEffect(() => {
+    if (showApplicationModal) {
+      document.body.style.overflow = 'hidden';
+    }
+    // Return cleanup function
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [showApplicationModal]);
   
   return (
     <div className="mb-10">
