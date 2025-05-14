@@ -8,7 +8,6 @@ import { AuthContext } from '../App';
 function Login() {
   const userState = useSelector((state) => state.user);
   const isAuthenticated = userState?.isAuthenticated || false;
-  const navigate = useNavigate();
   const { isInitialized } = useContext(AuthContext);
   
   useEffect(() => {
@@ -21,7 +20,6 @@ function Login() {
     if (isInitialized) {
       const { ApperUI } = window.ApperSDK;
       ApperUI.showLogin("#authentication");
-      document.getElementById("authentication").style.display = "block";
     }
   }, [isInitialized]);
   
@@ -36,7 +34,7 @@ function Login() {
           <h1 className="text-3xl font-bold text-surface-800 dark:text-surface-100">Welcome Back</h1>
           <p className="mt-2 text-surface-600 dark:text-surface-400">Sign in to your account</p>
         </div>
-        <div className="min-h-[400px] flex justify-center items-center" />
+        <div id="authentication" className="min-h-[400px]"></div>
         <div className="text-center mt-4">
           <p className="text-surface-600 dark:text-surface-400">
             Don't have an account?{' '}
