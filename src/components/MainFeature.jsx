@@ -18,6 +18,7 @@ function MainFeature({ activeTab }) {
   const ListFilterIcon = getIcon('ListFilter');
   const XIcon = getIcon('X');
   const BookmarkIcon = getIcon('Bookmark');
+  const FileTextIcon = getIcon('FileText');
   
   // Job Search States
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,6 +29,14 @@ function MainFeature({ activeTab }) {
   const [salary, setSalary] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  // Job Application States
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [applicationData, setApplicationData] = useState({ name: '', email: '', phone: '', coverLetter: '' });
+  const [fileUploaded, setFileUploaded] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [applicationSuccess, setApplicationSuccess] = useState(false);
   
   // Job Post States
   const [jobTitle, setJobTitle] = useState('');
@@ -142,10 +151,68 @@ function MainFeature({ activeTab }) {
     }, 1500);
   };
   
+  // Handle Apply Now button click
+  const handleApplyNow = (job) => {
+    setSelectedJob(job);
+    setApplicationData({ name: '', email: '', phone: '', coverLetter: '' });
+    setFileUploaded(false);
+    setShowApplicationModal(true);
+  };
+  
+  // Handle application form input changes
+  const handleApplicationChange = (e) => {
+    const { name, value } = e.target;
+    setApplicationData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  // Handle file upload for resume
+  const handleFileUpload = () => {
+    // In a real app, this would handle the actual file upload
+    setFileUploaded(true);
+    toast.info("Resume file selected. Will be uploaded with your application.");
+  };
+  
+  // Submit job application
+  const handleSubmitApplication = (e) => {
+    e.preventDefault();
+    
+    // Form validation
+    if (!applicationData.name || !applicationData.email || !fileUploaded) {
+      toast.error("Please fill all required fields and upload your resume");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setApplicationSuccess(true);
+      
+      toast.success(`Application for ${selectedJob.title} at ${selectedJob.company} submitted successfully!`);
+      
+      // Close modal after short delay
+      setTimeout(() => {
+        setShowApplicationModal(false);
+        setApplicationSuccess(false);
+      }, 2000);
+    }, 1500);
+  };
+  
+  // Close application modal
+  const closeApplicationModal = () => {
+    if (!isSubmitting) {
+      setShowApplicationModal(false);
+    }
+  };
+  
   // Reset search results when tab changes
   useEffect(() => {
     setSearchResults([]);
   }, [activeTab]);
+  
+  // Background scrolling prevention when modal is open
+  useEffect(() => document.body.style.overflow = showApplicationModal ? 'hidden' : 'unset', [showApplicationModal]);
   
   return (
     <div className="mb-10">
@@ -348,7 +415,7 @@ function MainFeature({ activeTab }) {
                               </div>
                               
                               <div className="flex flex-wrap gap-3">
-                                <button className="btn btn-primary flex items-center gap-1">
+                                <button className="btn btn-primary flex items-center gap-1" onClick={() => handleApplyNow(job)}>
                                   <SendIcon size={16} />
                                   <span>Apply Now</span>
                                 </button>
@@ -414,6 +481,139 @@ function MainFeature({ activeTab }) {
                   </div>
                 )}
               </div>
+              
+              {/* Job Application Modal */}
+              {showApplicationModal && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="bg-white dark:bg-surface-800 rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                  >
+                    {applicationSuccess ? (
+                      <div className="p-6 text-center">
+                        <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <h3 className="text-xl font-semibold mb-2">Application Submitted!</h3>
+                        <p className="text-surface-600 dark:text-surface-400 mb-4">
+                          Your application for {selectedJob?.title} at {selectedJob?.company} has been submitted successfully.
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex justify-between items-start border-b border-surface-200 dark:border-surface-700 p-6">
+                          <div>
+                            <h3 className="text-xl font-semibold">{selectedJob?.title}</h3>
+                            <p className="text-surface-600 dark:text-surface-400">
+                              {selectedJob?.company} • {selectedJob?.location}
+                            </p>
+                          </div>
+                          <button 
+                            onClick={closeApplicationModal}
+                            className="text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200"
+                          >
+                            <XIcon size={20} />
+                          </button>
+                        </div>
+                        
+                        <form onSubmit={handleSubmitApplication} className="p-6">
+                          <div className="space-y-4">
+                            <div>
+                              <label htmlFor="name" className="form-label">
+                                Full Name <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                className="form-input"
+                                value={applicationData.name}
+                                onChange={handleApplicationChange}
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label htmlFor="email" className="form-label">
+                                Email Address <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                className="form-input"
+                                value={applicationData.email}
+                                onChange={handleApplicationChange}
+                                required
+                              />
+                            </div>
+                            
+                            <div>
+                              <label htmlFor="phone" className="form-label">Phone Number</label>
+                              <input
+                                id="phone"
+                                name="phone"
+                                type="tel"
+                                className="form-input"
+                                value={applicationData.phone}
+                                onChange={handleApplicationChange}
+                              />
+                            </div>
+                            
+                            <div className="p-4 border border-dashed border-surface-300 dark:border-surface-600 rounded-lg">
+                              <div className="flex gap-3 items-center">
+                                <FileTextIcon className="text-primary" size={20} />
+                                <div className="flex-grow">
+                                  <p className="font-medium text-sm">Upload Resume <span className="text-red-500">*</span></p>
+                                  <p className="text-xs text-surface-500 dark:text-surface-400">PDF, DOCX or RTF (Max 5MB)</p>
+                                </div>
+                                <button 
+                                  type="button" 
+                                  onClick={handleFileUpload}
+                                  className={`btn ${fileUploaded ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 'bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300'}`}
+                                >
+                                  {fileUploaded ? 'Uploaded' : 'Upload'}
+                                </button>
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <label htmlFor="coverLetter" className="form-label">Cover Letter</label>
+                              <textarea
+                                id="coverLetter"
+                                name="coverLetter"
+                                className="form-input min-h-[120px]"
+                                placeholder="Why are you interested in this position and how does your experience align with the role?"
+                                value={applicationData.coverLetter}
+                                onChange={handleApplicationChange}
+                              ></textarea>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-6 flex justify-end">
+                            <button
+                              type="submit"
+                              className="btn btn-primary px-6"
+                              disabled={isSubmitting}
+                            >
+                              {isSubmitting ? (
+                                <div className="flex items-center gap-2">
+                                  <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                                  <span>Submitting...</span>
+                                </div>
+                              ) : 'Submit Application'}
+                            </button>
+                          </div>
+                        </form>
+                      </>
+                    )}
+                  </motion.div>
+                </div>
+              )}
             </div>
           </motion.div>
         ) : (
