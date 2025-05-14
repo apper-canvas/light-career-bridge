@@ -7,7 +7,9 @@ import { AuthContext } from '../App';
 
 function Signup() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector(state => state.user);
+  // Get authentication status from Redux with proper error handling
+  const userState = useSelector((state) => state.user);
+  const isAuthenticated = userState?.isAuthenticated || false;
   const { isInitialized } = useContext(AuthContext);
 
   useEffect(() => {
