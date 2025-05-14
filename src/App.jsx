@@ -13,7 +13,7 @@ import Dashboard from './pages/Dashboard';
 import ProfileCreate from './pages/ProfileCreate';
 import UserMenu from './components/UserMenu';
 import { setUser, clearUser } from './store/userSlice';
-import ProtectedRoute from './utils/protectedRoute';
+import ProtectedRoute from './utils/ProtectedRoute';
 
 // Create auth context
 export const AuthContext = createContext(null);
