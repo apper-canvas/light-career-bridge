@@ -46,7 +46,7 @@ export const login = createAsyncThunk(
 // Async thunk for user registration
 export const register = createAsyncThunk(
   'auth/register',
-  async ({ name, email, password, userType }, { rejectWithValue }) => {
+  async ({ name, email, password, userType, jobSeekerInfo }, { rejectWithValue }) => {
     try {
       // Simulating API call delay
       await new Promise(resolve => setTimeout(resolve, 1200));
@@ -65,8 +65,14 @@ export const register = createAsyncThunk(
         id: sampleUsers.length + 1,
         name,
         email,
+        password, // This was missing, causing login failures after registration
         userType
       };
+      
+      // Add job seeker specific info if the user is a job seeker
+      if (userType === 'jobseeker' && jobSeekerInfo) {
+        newUser.jobSeekerInfo = jobSeekerInfo;
+      }
       
       // Add to our sample database
       sampleUsers.push(newUser);

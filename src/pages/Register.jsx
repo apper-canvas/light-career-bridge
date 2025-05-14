@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { register } from '../features/auth/authSlice';
 import getIcon from '../utils/iconUtils';
 import { validateEmail, validatePassword, calculatePasswordStrength, getPasswordStrengthInfo } from '../utils/authUtils';
+import JobSeekerRegistrationForm from '../components/JobSeekerRegistrationForm';
 
 function Register() {
   const [name, setName] = useState('');
@@ -15,6 +16,7 @@ function Register() {
   const [userType, setUserType] = useState('jobseeker');
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [jobSeekerInfo, setJobSeekerInfo] = useState({ education: '', experience: '', skills: [] });
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -70,6 +72,17 @@ function Register() {
     if (password !== confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
+
+    // Validate job seeker specific fields if user is a job seeker
+    if (userType === 'jobseeker') {
+      if (!jobSeekerInfo.education) {
+        newErrors.education = 'Education level is required';
+      }
+      if (!jobSeekerInfo.experience) {
+        newErrors.experience = 'Experience level is required';
+      }
+      // Skills are optional, so no validation required
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -114,8 +127,16 @@ function Register() {
     if (validateForm()) {
       setIsSubmitting(true);
       
+      // Prepare registration data
+      const registrationData = { 
+        name, 
+        email, 
+        password, 
+        userType 
+      };
+      
       setTimeout(() => {
-        dispatch(register({ name, email, password, userType }))
+        dispatch(register(userType === 'jobseeker' ? { ...registrationData, jobSeekerInfo } : registrationData))
           .unwrap()
           .then(() => {
             toast.success("Registration successful! You can now log in.");
@@ -300,6 +321,16 @@ function Register() {
               </button>
             </div>
           </div>
+
+          {/* Show job seeker specific form if user type is job seeker */}
+          {userType === 'jobseeker' && (
+            <JobSeekerRegistrationForm 
+              jobSeekerInfo={jobSeekerInfo}
+              setJobSeekerInfo={setJobSeekerInfo}
+              errors={errors}
+              handleBlur={handleBlur}
+            />
+          )}
           
           <button type="submit" className="btn btn-primary w-full" disabled={isSubmitting}>
             {isSubmitting ? (
