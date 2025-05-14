@@ -2,21 +2,13 @@ import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { motion } from 'framer-motion';
 import { useContext } from 'react';
 import { AuthContext } from '../App';
 
 function Login() {
   const userState = useSelector((state) => state.user);
   const isAuthenticated = userState?.isAuthenticated || false;
-  const userState = useSelector(state => state.user);
-  
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    }
-  }, [isAuthenticated, navigate]);
-  const isAuthenticated = userState?.isAuthenticated || false;
+  const navigate = useNavigate();
   const { isInitialized } = useContext(AuthContext);
   
   useEffect(() => {
@@ -26,12 +18,7 @@ function Login() {
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md space-y-8 p-6 bg-white dark:bg-surface-800 rounded-lg shadow-md"
-      >
-        <div className="text-center">
+    if (isInitialized) {
       const { ApperUI } = window.ApperSDK;
       ApperUI.showLogin("#authentication");
     }
@@ -45,8 +32,8 @@ function Login() {
         className="w-full max-w-md space-y-8 p-6 bg-white dark:bg-surface-800 rounded-lg shadow-md"
       >
         <div className="text-center">
-      </motion.div>
-          <p className="mt-2 text-surface-600 dark:text-surface-400">Sign in to your account</p>
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-surface-800 dark:text-surface-100">Welcome Back</h1>
         </div>
         <div id="authentication" className="min-h-[400px]" />
         <div className="mt-6 text-center">
