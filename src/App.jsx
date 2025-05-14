@@ -140,7 +140,7 @@ function App() {
   
   return (
     <AuthContext.Provider value={authMethods}>
-      <div id="authentication" className="hidden"></div>
+      <div id="authentication"></div>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
