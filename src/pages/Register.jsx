@@ -65,7 +65,8 @@ function Register() {
     if (!password) {
       newErrors.password = 'Password is required'; 
     } else if (!validatePassword(password)) {
-    
+      newErrors.password = 'Password must meet all requirements below';
+    }
     if (password !== confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
