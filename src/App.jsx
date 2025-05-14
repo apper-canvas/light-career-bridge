@@ -11,7 +11,6 @@ import Callback from './pages/Callback';
 import ErrorPage from './pages/ErrorPage';
 import Dashboard from './pages/Dashboard';
 import ProfileCreate from './pages/ProfileCreate';
-import getIcon from './utils/iconUtils';
 import UserMenu from './components/UserMenu';
 import { setUser, clearUser } from './store/userSlice';
 import ProtectedRoute from './utils/protectedRoute';
@@ -31,9 +30,6 @@ function App() {
     const savedMode = localStorage.getItem('darkMode');
     return savedMode ? JSON.parse(savedMode) : window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
-  
-  const MoonIcon = getIcon('Moon');
-  const SunIcon = getIcon('Sun');
   
   // Initialize ApperUI once when the app loads
   useEffect(() => {
@@ -121,73 +117,6 @@ function App() {
     setDarkMode(!darkMode);
   };
 
-  return (
-    <div className="min-h-screen flex flex-col transition-colors duration-300">
-      <header className="bg-white dark:bg-surface-800 shadow-sm py-3 px-4 sm:px-6 lg:px-8 border-b border-surface-200 dark:border-surface-700">
-        <div className="container mx-auto flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-primary text-xl font-bold">Career<span className="text-secondary">Bridge</span></span>
-          </a>
-          
-          <div className="flex items-center gap-3">
-            {isAuthenticated ? (
-              <UserMenu user={user} darkMode={darkMode} />
-            ) : (
-              <div className="hidden sm:flex items-center gap-3">
-                <a href="/login" className="px-4 py-2 text-sm font-medium text-surface-700 dark:text-surface-300 hover:text-primary dark:hover:text-primary transition-colors">
-                  Log In
-                </a>
-                <a href="/register" className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
-                  Sign Up
-                </a>
-              </div>
-            )}
-            
-            <button
-              aria-label="Toggle dark mode"
-              onClick={toggleDarkMode}
-              className="p-2 rounded-full bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-200 transition-all duration-300 hover:bg-surface-200 dark:hover:bg-surface-600">
-              {darkMode ? <SunIcon size={20} /> : <MoonIcon size={20} />}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile/create" element={<AuthProtected><ProfileCreate /></AuthProtected>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-      
-      <footer className="bg-white dark:bg-surface-800 border-t border-surface-200 dark:border-surface-700 py-6 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center text-surface-600 dark:text-surface-400 text-sm">
-          &copy; {new Date().getFullYear()} CareerBridge. All rights reserved.
-        </div>
-      </footer>
-
-      <ToastContainer
-        position="bottom-right"
-        autoClose={4000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme={darkMode ? "dark" : "light"}
-      />
-    </div>
-  );
-}
-
-export default App;
-  };
-  
   // Authentication methods to share via context
   const authMethods = {
     isInitialized,
@@ -202,9 +131,22 @@ export default App;
         toast.error("Logout failed: " + (error.message || "Unknown error"));
       }
     }
+  };
+  
+  // Don't render routes until initialization is complete
+  if (!isInitialized) {
+    return <div className="loading">Initializing application...</div>;
+  }
+  
+  return (
         <AuthContext.Provider value={authMethods}>
           <div id="authentication" className="hidden"></div>
           <Routes>
+  );
+}
+
+export default App;
+
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
