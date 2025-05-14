@@ -7,7 +7,8 @@ import { AuthContext } from '../App';
 
 function Login() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useSelector(state => state.user);
+  const userState = useSelector(state => state.user);
+  const isAuthenticated = userState?.isAuthenticated || false;
   const { isInitialized } = useContext(AuthContext);
   
   useEffect(() => {
