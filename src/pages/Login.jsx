@@ -32,16 +32,14 @@ function Login() {
         className="w-full max-w-md space-y-8 p-6 bg-white dark:bg-surface-800 rounded-lg shadow-md"
       >
         <div className="text-center">
-        <div className="text-center">
           <h1 className="text-3xl font-bold text-surface-800 dark:text-surface-100">Welcome Back</h1>
+          <p className="mt-2 text-surface-600 dark:text-surface-400">Sign in to your account</p>
         </div>
         <div id="authentication" className="min-h-[400px]" />
-        <div className="mt-6 text-center">
+        <div className="text-center mt-4">
           <p className="text-surface-600 dark:text-surface-400">
             Don't have an account?{' '}
-            <Link to="/signup" className="font-medium text-primary hover:text-primary-dark">
-              Sign up
-            </Link>
+            <Link to="/signup" className="font-medium text-primary hover:text-primary-dark">Sign up</Link>
           </p>
         </div>
       </motion.div>
