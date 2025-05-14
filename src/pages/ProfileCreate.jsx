@@ -49,6 +49,7 @@ function ProfileCreate() {
   const PlusIcon = getIcon('Plus');
   const MinusIcon = getIcon('Minus');
   const ChevronRightIcon = getIcon('ChevronRight');
+  const CheckIcon = getIcon('Check');
   const ChevronLeftIcon = getIcon('ChevronLeft');
   const SaveIcon = getIcon('Save');
   
