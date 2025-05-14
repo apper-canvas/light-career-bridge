@@ -139,20 +139,21 @@ function App() {
   }
   
   return (
-        <AuthContext.Provider value={authMethods}>
-          <div id="authentication" className="hidden"></div>
-          <Routes>
+    <AuthContext.Provider value={authMethods}>
+      <div id="authentication" className="hidden"></div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/callback" element={<Callback />} />
+        <Route path="/error" element={<ErrorPage />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/profile/create" element={<ProtectedRoute><ProfileCreate /></ProtectedRoute>} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <ToastContainer />
+    </AuthContext.Provider>
   );
 }
 
 export default App;
-
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/callback" element={<Callback />} />
-            <Route path="/error" element={<ErrorPage />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/profile/create" element={<ProtectedRoute><ProfileCreate /></ProtectedRoute>} />
-          </Routes>
-        </AuthContext.Provider>
