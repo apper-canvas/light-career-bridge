@@ -64,6 +64,7 @@ function App() {
               {darkMode ? <SunIcon size={20} /> : <MoonIcon size={20} />}
             </button>
           </div>
+        </div>
       </header>
 
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
