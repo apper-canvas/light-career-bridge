@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { setToken, removeToken, getToken } from '../../utils/authUtils';
+import { setToken, removeToken, getToken, hashPassword } from '../../utils/authUtils';
 
 // Sample user database for demo purposes
 const sampleUsers = [
@@ -57,12 +57,14 @@ export const register = createAsyncThunk(
         return rejectWithValue('Email already in use');
       }
       
+      // Hash the password before storing
+      const hashedPassword = hashPassword(password);
+      
       // In a real app, we would send data to a server to create an account
       const newUser = {
         id: sampleUsers.length + 1,
         name,
         email,
-        password,
         userType
       };
       
@@ -70,6 +72,7 @@ export const register = createAsyncThunk(
       sampleUsers.push(newUser);
       
       return { success: true };
+      
     } catch (error) {
       return rejectWithValue(error.message || 'Registration failed');
     }

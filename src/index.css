@@ -65,6 +65,27 @@
   .form-error {
     @apply mt-1 text-sm text-red-600 dark:text-red-400;
   }
+  
+  /* Password strength meter */
+  .password-strength-meter {
+    @apply h-1 w-full mt-1 bg-surface-200 dark:bg-surface-700 rounded flex overflow-hidden;
+  }
+  
+  .password-strength-meter div {
+    @apply h-full transition-all duration-300;
+  }
+  
+  .password-strength-label {
+    @apply text-xs mt-1 text-right;
+  }
+  
+  .validation-item {
+    @apply flex items-center gap-1 text-sm mt-1;
+  }
+  
+  .validation-list {
+    @apply space-y-1 mt-2;
+  }
 }
 
 @layer utilities {

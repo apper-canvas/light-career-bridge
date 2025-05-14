@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { register } from '../features/auth/authSlice';
 import getIcon from '../utils/iconUtils';
-import { validateEmail, validatePassword } from '../utils/authUtils';
+import { validateEmail, validatePassword, calculatePasswordStrength, getPasswordStrengthInfo } from '../utils/authUtils';
 
 function Register() {
   const [name, setName] = useState('');
@@ -28,8 +28,20 @@ function Register() {
   const EyeOffIcon = getIcon('EyeOff');
   const BriefcaseIcon = getIcon('Briefcase');
   const BuildingIcon = getIcon('Building');
+  const CheckIcon = getIcon('Check');
+  const XIcon = getIcon('X');
+  const AlertCircleIcon = getIcon('AlertCircle');
   
   const [showPassword, setShowPassword] = useState(false);
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+    confirmPassword: false
+  });
+  
+  const passwordStrength = useMemo(() => calculatePasswordStrength(password), [password]);
+  const strengthInfo = useMemo(() => getPasswordStrengthInfo(passwordStrength), [passwordStrength]);
   
   useEffect(() => {
     if (isAuthenticated) {
@@ -51,10 +63,8 @@ function Register() {
     }
     
     if (!password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Password is required'; 
     } else if (!validatePassword(password)) {
-      newErrors.password = 'Password must be at least 8 characters with a number and a special character';
-    }
     
     if (password !== confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
@@ -62,6 +72,39 @@ function Register() {
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+  
+  // Handle field blur to mark fields as touched
+  const handleBlur = (field) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+  };
+  
+  // Validate email on change if it's been touched
+  const validateEmailOnChange = (value) => {
+    setEmail(value);
+    if (touched.email) {
+      if (!value) {
+        setErrors(prev => ({ ...prev, email: 'Email is required' }));
+      } else if (!validateEmail(value)) {
+        setErrors(prev => ({ ...prev, email: 'Please enter a valid email address' }));
+      } else {
+        setErrors(prev => ({ ...prev, email: undefined }));
+      }
+    }
+  };
+  
+  // Validate password on change if it's been touched
+  const validatePasswordOnChange = (value) => {
+    setPassword(value);
+    if (touched.password) {
+      if (!value) {
+        setErrors(prev => ({ ...prev, password: 'Password is required' }));
+      } else if (!validatePassword(value)) {
+        setErrors(prev => ({ ...prev, password: 'Password must meet all requirements below' }));
+      } else {
+        setErrors(prev => ({ ...prev, password: undefined }));
+      }
+    }
   };
   
   const handleSubmit = (e) => {
@@ -124,7 +167,12 @@ function Register() {
               <input id="email" type="email" className={`form-input pl-10 ${errors.email ? 'border-red-500' : ''}`} 
                 placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+            {errors.email && (
+              <div className="validation-item text-red-500">
+                <AlertCircleIcon size={16} />
+                <span>{errors.email}</span>
+              </div>
+            )}
           </div>
           
           <div>
@@ -135,13 +183,70 @@ function Register() {
               </div>
               <input id="password" type={showPassword ? "text" : "password"} 
                 className={`form-input pl-10 ${errors.password ? 'border-red-500' : ''}`} 
-                placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
+                placeholder="••••••••" value={password} 
+                onChange={(e) => validatePasswordOnChange(e.target.value)}
+                onBlur={() => handleBlur('password')} />
               <button type="button" className="absolute right-3 top-3 text-surface-500" 
                 onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
               </button>
             </div>
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+            
+            <div className="password-strength-meter">
+              {[...Array(4)].map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`flex-1 ${i < passwordStrength ? `bg-${strengthInfo.color}-500` : ''}`}
+                  style={{backgroundColor: i < passwordStrength ? 
+                    (strengthInfo.color === 'red' ? '#ef4444' : 
+                     strengthInfo.color === 'orange' ? '#f97316' : 
+                     strengthInfo.color === 'yellow' ? '#eab308' : 
+                     strengthInfo.color === 'green' ? '#22c55e' : '#94a3b8') : ''}}
+                ></div>
+              ))}
+            </div>
+            <div className="password-strength-label" style={{color: 
+              strengthInfo.color === 'red' ? '#ef4444' : 
+              strengthInfo.color === 'orange' ? '#f97316' : 
+              strengthInfo.color === 'yellow' ? '#eab308' : 
+              strengthInfo.color === 'green' ? '#22c55e' : '#94a3b8'
+            }}>
+              {password && `Password strength: ${strengthInfo.label}`}
+            </div>
+            
+            {errors.password && (
+              <div className="validation-item text-red-500">
+                <AlertCircleIcon size={16} />
+                <span>{errors.password}</span>
+              </div>
+            )}
+            
+            <div className="validation-list">
+              <div className="validation-item" style={{color: /^.{8,}$/.test(password) ? '#22c55e' : '#94a3b8'}}>
+                {/^.{8,}$/.test(password) ? <CheckIcon size={16} /> : <XIcon size={16} />}
+                <span>At least 8 characters</span>
+              </div>
+              
+              <div className="validation-item" style={{color: /[A-Z]/.test(password) ? '#22c55e' : '#94a3b8'}}>
+                {/[A-Z]/.test(password) ? <CheckIcon size={16} /> : <XIcon size={16} />}
+                <span>At least one uppercase letter</span>
+              </div>
+              
+              <div className="validation-item" style={{color: /[a-z]/.test(password) ? '#22c55e' : '#94a3b8'}}>
+                {/[a-z]/.test(password) ? <CheckIcon size={16} /> : <XIcon size={16} />}
+                <span>At least one lowercase letter</span>
+              </div>
+              
+              <div className="validation-item" style={{color: /[0-9]/.test(password) ? '#22c55e' : '#94a3b8'}}>
+                {/[0-9]/.test(password) ? <CheckIcon size={16} /> : <XIcon size={16} />}
+                <span>At least one number</span>
+              </div>
+              
+              <div className="validation-item" style={{color: /[@$!%*?&=#_-]/.test(password) ? '#22c55e' : '#94a3b8'}}>
+                {/[@$!%*?&=#_-]/.test(password) ? <CheckIcon size={16} /> : <XIcon size={16} />}
+                <span>At least one special character</span>
+              </div>
+            </div>
           </div>
           
           <div>
@@ -152,9 +257,16 @@ function Register() {
               </div>
               <input id="confirmPassword" type={showPassword ? "text" : "password"} 
                 className={`form-input pl-10 ${errors.confirmPassword ? 'border-red-500' : ''}`} 
-                placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                placeholder="••••••••" value={confirmPassword} 
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                onBlur={() => handleBlur('confirmPassword')} />
             </div>
-            {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && (
+              <div className="validation-item text-red-500">
+                <AlertCircleIcon size={16} />
+                <span>{errors.confirmPassword}</span>
+              </div>
+            )}
           </div>
           
           <div>
